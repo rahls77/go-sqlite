@@ -58,8 +58,15 @@ func NewWebHook(c *fiber.Ctx) error {
 		fmt.Println(err)
 	}
 	orderStatus.OrderStatusUrl = strings.Split(orderStatus.OrderStatusUrl, "/")[2]
-	fmt.Println(orderStatus.OrderStatusUrl)
-	fmt.Println(orderStatus.Customer.CustomerId)
+
+	var storeCredit StoreCredit
+
+	db := database.DBConn
+	db.Where(StoreCredit{CustomerId: orderStatus.Customer.CustomerId}).Attrs(StoreCredit{ShopDomain: orderStatus.OrderStatusUrl}).FirstOrCreate(&storeCredit)
+	newCredit := storeCredit.Credit + 1
+	db.Model(&storeCredit).Where(StoreCredit{CustomerId: orderStatus.Customer.CustomerId}).Updates(StoreCredit{Credit: newCredit})
+	s, _ := json.MarshalIndent(storeCredit, "", "\t");
+	fmt.Println(string(s))
 	fmt.Println("Called Webhook")
-	return c.Status(200).SendString("Called Webhook")
+	return c.JSON(storeCredit)
 }
