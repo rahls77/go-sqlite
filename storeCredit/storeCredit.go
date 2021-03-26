@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/jinzhu/gorm"
@@ -26,10 +27,12 @@ type WebHook struct {
 }
 
 func GetStoreCredit(c *fiber.Ctx) error {
-	id := c.Params("id")
+	customerId, err := strconv.Atoi(c.Params("id"))
+	fmt.Println(err)
+
 	db := database.DBConn
 	var storeCredit StoreCredit
-	db.Find(&storeCredit, id)
+	db.Find(&storeCredit, StoreCredit{CustomerId: customerId})
 	fmt.Println("Called store credit get request")
 	fmt.Println(storeCredit)
 	if storeCredit.CustomerId == 0 {

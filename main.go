@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/rahls77/go-sqlite/database"
@@ -34,6 +35,15 @@ func initDatabase(filename string) *gorm.DB {
 
 func main() {
 	app := fiber.New()
+
+		// Default config
+	app.Use(cors.New())
+
+	// Or extend your config for customization
+	app.Use(cors.New(cors.Config{
+			AllowOrigins: "https://rahulsharma-bootcamp.myshopify.com",
+			AllowHeaders:  "Origin, Content-Type, Accept",
+	}))
 
 	initDatabase("storeCredit.db")
 
